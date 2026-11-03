@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="container mt-5">
+    <h2>FaceKid Post Area</h2>
+
+    <p>Hoş geldin, @User.Identity?.Name!</p>
+
+    <form asp-controller="Account" asp-action="Logout" method="post">
+
+        @Html.AntiForgeryToken()
+
+        <button type="submit" class="btn btn-danger">Çıkış Yap</button>
+
+    </form>
+
+
+    <hr/>
+    <h3>Post paylaş</h3>
+    <p>Post paylaşma alanı yakında burada olacak</p>
+</div>
