@@ -4,6 +4,8 @@ using FaceKid.ViewModels;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using FaceKid.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace FaceKid.Controllers
 {
@@ -14,12 +16,15 @@ namespace FaceKid.Controllers
         private readonly IValidator<CreatePostViewModel> _validator;
         private readonly ILogger<PostController> _logger;
 
+        private readonly IHubContext<PostHub> _hubContext;
         public PostController(IPostService postService, IValidator<CreatePostViewModel> validator,
-            ILogger<PostController> logger)
+            ILogger<PostController> logger,
+            IHubContext<PostHub> hubContext)
         {
             _postService = postService;
             _validator = validator;
             _logger = logger;
+            _hubContext = hubContext;
         }
 
         [HttpGet]
@@ -70,6 +75,15 @@ namespace FaceKid.Controllers
             };
 
             await _postService.AddPostAsync(post);
+
+            await _hubContext.Clients.All.SendAsync("ReceivePost",
+                new
+                {
+                    id = post.Id,
+                    content = post.Content,
+                    sentAt = post.SentAt,
+                    fullName = User.Identity?.Name
+                });
 
             _logger.LogInformation("Kullanıcı post paylaştı! PostId: {PostId}", post.Id);
 

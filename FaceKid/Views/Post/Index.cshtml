@@ -38,20 +38,26 @@
 
 <!--Post listesi-->
 
-@if(Model.Posts.Count == 0)
-{
-    <p>Henüz post yok!</p>
-}else{
-    @foreach (var post in Model.Posts)
-    {
-                    <div class="mb-3">
-            <strong>@post.User.FullName</strong>
-            <small>@post.SentAt.ToLocalTime().ToString("dd.MM.yyy HH.mm")</small>
-            <p>@post.Content</p>
-        </div>
-        <hr />
-    }
-}
+<div id="postList">
+
+                @if (Model.Posts.Count == 0)
+                {
+                    <p>Henüz post yok!</p>
+                }
+                else
+                {
+                    @foreach (var post in Model.Posts)
+                    {
+                        <div class="mb-3">
+                            <strong>@post.User.FullName</strong>
+                            <small>@post.SentAt.ToLocalTime().ToString("dd.MM.yyy HH.mm")</small>
+                            <p>@post.Content</p>
+                        </div>
+                        <hr />
+                    }
+                }
+
+</div>
 
         <form asp-controller="Account" asp-action="Logout" method="post">
             @Html.AntiForgeryToken()
@@ -61,3 +67,50 @@
         </div>    
         </div>
 </div>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js">
+
+</script>
+
+<script>
+    const connection = new signalR.HubConnectionBuilder().withUrl("/postHub").withAutomaticReconnect().build();
+
+    connection.on("ReceivePost", function(post){
+        const postList = document.getElementById("postList");
+
+        const emptyMessage = document.getElementById("emptyMessage");
+
+        if(emptyMessage){
+            emptyMessage.remove();
+        }
+
+        const postDiv = document.createElement("div");
+        const username = document.createElement("strong");
+        username.textContent = post.fullName || "Kullanıcı";
+        const date = document.createElement("small");
+        date.textContent = " " + new Date(post.sentAt).toLocaleString("tr-TR");
+        const content = document.createElement("p");
+        content.textContent = post.content;
+
+        postDiv.appendChild(username);
+        postDiv.appendChild(date);
+        postDiv.appendChild(content);
+
+        const hr = document.createElement("hr");
+
+        postList.prepend(hr);
+        postList.prepend(postDiv);
+
+
+    });
+
+    async function startConnection(){
+        try{
+            await connection.start();
+            console.log("SignalR bağlantısı kuruldu!");
+        }catch(error){
+            console.error("SignalR bağlantı hatası", error;
+        }
+    }
+    startConnection();
+</script>

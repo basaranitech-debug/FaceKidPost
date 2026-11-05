@@ -7,6 +7,7 @@ using FaceKid.Services.Interfaces;
 using FaceKid.Validators;
 using FaceKid.ViewModels;
 using FluentValidation;
+using FaceKid.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ builder.Services.AddScoped<IPostService, PostService>();
 
 builder.Services.AddScoped<IValidator<CreatePostViewModel>, PostValidator>();
 
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -44,10 +46,13 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+app.MapHub<PostHub>("/postHub");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
 
 
 app.Run();
