@@ -2,6 +2,11 @@ using FaceKid.Entities;
 using FaceKid.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using FaceKid.Services;
+using FaceKid.Services.Interfaces;
+using FaceKid.Validators;
+using FaceKid.ViewModels;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +20,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options => { options.LoginPath = "/Account/Login"; });
+
+builder.Services.AddScoped<IPostService, PostService>();
+
+builder.Services.AddScoped<IValidator<CreatePostViewModel>, PostValidator>();
 
 
 var app = builder.Build();

@@ -1,0 +1,63 @@
+﻿@model FaceKid.ViewModels.PostIndexViewModel
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Postlar";
+}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <h2 class="text-center mb-4">Facekid</h2>
+
+            <p class="text-center mt-3">Hoşgeldin, @User.Identity?.Name!</p>
+
+<!-- yeni post oluşturma formu-->
+
+<form asp-controller="Post" asp-action="Create" method="post" >
+    @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+        <label asp-for="NewPost.Content">
+            Ne düşünüyorsun?
+        </label>
+        <br/>
+                    <textarea asp-for="NewPost.Content" rows="4" cols="50" maxlength="500" class="form-control">
+        </textarea>
+        <!--Fluent validation hata mesajları-->
+        <span asp-validation-for="NewPost.Content" style="color:red"></span>
+    </div>
+                <button type="submit" class="btn btn-primary w-100">Paylaş!</button>
+
+</form>
+
+<hr/>
+
+            <h3 class="text-center mb-4">Paylaşımlar</h3>
+
+<!--Post listesi-->
+
+@if(Model.Posts.Count == 0)
+{
+    <p>Henüz post yok!</p>
+}else{
+    @foreach (var post in Model.Posts)
+    {
+                    <div class="mb-3">
+            <strong>@post.User.FullName</strong>
+            <small>@post.SentAt.ToLocalTime().ToString("dd.MM.yyy HH.mm")</small>
+            <p>@post.Content</p>
+        </div>
+        <hr />
+    }
+}
+
+        <form asp-controller="Account" asp-action="Logout" method="post">
+            @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-primary w-100" style="background-color:red">Çıkış yap!</button>
+
+        </form>
+        </div>    
+        </div>
+</div>

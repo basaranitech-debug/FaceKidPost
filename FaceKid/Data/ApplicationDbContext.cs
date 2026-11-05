@@ -10,5 +10,7 @@ namespace FaceKid.Data
         {
 
         }
+
+        public DbSet<Post> Posts { get; set; }
     }
 }
